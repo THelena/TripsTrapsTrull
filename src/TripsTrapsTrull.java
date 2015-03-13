@@ -5,22 +5,41 @@ import java.util.ArrayList;
 import java.util.Scanner;
 public class TripsTrapsTrull {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
 
+        System.out.println("Tere tulemast mängima Trips-Traps-Trulli!");
+        System.out.println("Teie olete X ja arvuti on 0.");
+        System.out.println("Edukat mängimist!");
+
+        //boolean mängu_jätk = true;
+        Scanner sc = new Scanner(System.in);
         ArrayList<Integer> järjend = new ArrayList<Integer>();
+        ArrayList<String> käigud = new ArrayList<String>();
         for (int a =0; a < 9; a++) {
             järjend.add(a);
+            käigud.add("");
         }
 
-        int u = 0;
-        for (int i = 0; i < 7; i++) {
-            if (i == 0 || i == 2 || i == 4 || i == 6) {
-                System.out.println("+-----------+");
+        Mängulaud a = new Mängulaud(järjend, käigud);
+
+        while (true) {
+            System.out.println(a);
+            System.out.println("Millisesse ruutu soovite oma käigu teha? ");
+            int number = sc.nextInt();
+            if (number == 7) {
+                break;
+            }
+            if (käigud.get(number).equals("X") || käigud.get(number).equals("O")) {
+                System.out.println("Sinna ruutu ei ole võimalik kahjuks käia!");
             }
             else {
-                System.out.println("| " + järjend.get(u) + " | " + järjend.get(u+1) + " | " + järjend.get(u+2) + " |");
-                u += 3;
+                käigud.set(number, "X");
+                a.setKäigud(käigud);
             }
         }
+
+
+
+
     }
 }
