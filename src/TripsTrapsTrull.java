@@ -29,17 +29,20 @@ public class TripsTrapsTrull {
             System.out.println(a);
             System.out.println("Millisesse ruutu soovite oma käigu teha? ");
             int number = sc.nextInt();
-            if (number == 7) {
-                break;
-            }
             if (käigud.get(number).equals("X") || käigud.get(number).equals("O")) {
                 System.out.println("Sinna ruutu ei ole võimalik kahjuks käia!");
             }
             else {
                 käigud.set(number, "X");
                 a.setKäigud(käigud);
+                System.out.println(a.getKäigud());
                 if (a.Kontroll("X") == true) {
+                    System.out.println(a);
                     System.out.println("Olete võitnud!");
+                    break;
+                }
+                if (!käigud.contains("")) {
+                    System.out.println("Olete jäänud viiki!");
                     break;
                 }
 
@@ -47,9 +50,11 @@ public class TripsTrapsTrull {
                 käigud.set(arvuti_number, "O");
                 a.setKäigud(käigud);
                 if (a.Kontroll("O") == true) {
+                    System.out.println(a);
                     System.out.println("Olete kaotanud! Vahest peaksite strateegiat muutma?");
                     break;
                 }
+
 
             }
         }

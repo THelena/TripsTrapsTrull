@@ -28,7 +28,7 @@ public class Mängulaud {
         for (int i =0; i < 9; i++) {
             if (käigud.get(i).equals("X") || käigud.get(i).equals("O")) {
                 if(arvuti_käigud.contains(i)) {
-                    arvuti_käigud.remove(i);
+                    arvuti_käigud.remove(new Integer(i));
                 }
             }
         }
@@ -59,6 +59,7 @@ public class Mängulaud {
         if (käigud.get(2).equals(võistleja) && käigud.get(4).equals(võistleja)&&käigud.get(6).equals(võistleja)){
             return true;
         }
+
         else{
             return false;
         }
