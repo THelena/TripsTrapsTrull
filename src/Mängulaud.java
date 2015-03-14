@@ -41,6 +41,29 @@ public class Mängulaud {
 
     }
 
+    boolean Kontroll(String võistleja){
+        for (int u = 0; u<7; u+=3){
+            if (käigud.get(u).equals(võistleja) && käigud.get(u+1).equals(võistleja)&&käigud.get(u+2).equals(võistleja)){
+                return true;
+            }
+        }
+        for (int k = 0; k<3; k++){
+            if (käigud.get(k).equals(võistleja) && käigud.get(k+3).equals(võistleja)&&käigud.get(k+6).equals(võistleja)){
+                return true;
+            }
+        }
+
+        if (käigud.get(0).equals(võistleja) && käigud.get(4).equals(võistleja)&&käigud.get(8).equals(võistleja)){
+            return true;
+        }
+        if (käigud.get(2).equals(võistleja) && käigud.get(4).equals(võistleja)&&käigud.get(6).equals(võistleja)){
+            return true;
+        }
+        else{
+            return false;
+        }
+
+    }
 
 
     public String toString() {
@@ -74,4 +97,5 @@ public class Mängulaud {
         }
         return sb.toString();
     }
+
 }

@@ -38,9 +38,18 @@ public class TripsTrapsTrull {
             else {
                 käigud.set(number, "X");
                 a.setKäigud(käigud);
+                if (a.Kontroll("X") == true) {
+                    System.out.println("Olete võitnud!");
+                    break;
+                }
+
                 int arvuti_number = a.teeKaik();
                 käigud.set(arvuti_number, "O");
                 a.setKäigud(käigud);
+                if (a.Kontroll("O") == true) {
+                    System.out.println("Olete kaotanud! Vahest peaksite strateegiat muutma?");
+                    break;
+                }
 
             }
         }
