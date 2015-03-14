@@ -1,6 +1,7 @@
 /**
  * Created by Helena on 13/03/2015.
  */
+import java.util.Collections;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -24,7 +25,70 @@ public class Mängulaud {
         this.käigud = käigud;
     }
 
+    int väike_kontroll(ArrayList l, String sümbol){
+        int tühja_sagedus = Collections.frequency(l,"");
+        int sümboli_sagedus = Collections.frequency(l, sümbol);
+        if (tühja_sagedus ==0){
+            return -1;
+        }
+        else if(sümboli_sagedus==2){
+            int indeks = l.indexOf("");
+            return indeks;
+        }
+        else{
+            return -1;
+        }
+    }
+
+    int suur_meetod(String sümbol){
+        ArrayList<String> väike_list = new ArrayList<String>();
+        for (int u = 0; u<7; u+=3){
+            väike_list.add(käigud.get(u));
+            väike_list.add(käigud.get(u+1));
+            väike_list.add(käigud.get(u+2));
+            if (väike_kontroll(väike_list,sümbol)!=-1){
+                return u+väike_kontroll(väike_list,sümbol);
+            }
+            väike_list.clear();
+        }
+        for (int k = 0; k<3; k++){
+            väike_list.add(käigud.get(k));
+            väike_list.add(käigud.get(k+3));
+            väike_list.add(käigud.get(k+6));
+            if (väike_kontroll(väike_list,sümbol)!=-1){
+                return k+väike_kontroll(väike_list,sümbol)*3;
+            }
+            väike_list.clear();
+            }
+
+        väike_list.add(käigud.get(0));
+        väike_list.add(käigud.get(4));
+        väike_list.add(käigud.get(8));
+        if (väike_kontroll(väike_list,sümbol)!=-1){
+            return väike_kontroll(väike_list,sümbol)*4;
+        }
+        väike_list.clear();
+
+        väike_list.add(käigud.get(2));
+        väike_list.add(käigud.get(4));
+        väike_list.add(käigud.get(6));
+        if (väike_kontroll(väike_list,sümbol)!=-1){
+            return 2+väike_kontroll(väike_list,sümbol)*2;
+        }
+        väike_list.clear();
+
+        return -1;
+    }
+
+
     int teeKaik() {
+        if (suur_meetod("O")!=-1){
+            return suur_meetod("O");
+        }
+        else if (suur_meetod("X")!=-1){
+            return suur_meetod(("X"));
+        }
+
         for (int i =0; i < 9; i++) {
             if (käigud.get(i).equals("X") || käigud.get(i).equals("O")) {
                 if(arvuti_käigud.contains(i)) {
@@ -40,6 +104,7 @@ public class Mängulaud {
         return arvuti_käigud.get(number);
 
     }
+
 
     boolean Kontroll(String võistleja){
         for (int u = 0; u<7; u+=3){
