@@ -54,8 +54,6 @@ public class TripsTrapsTrull {
                     System.out.println("Olete kaotanud! Vahest peaksite strateegiat muutma?");
                     break;
                 }
-
-
             }
         }
 
