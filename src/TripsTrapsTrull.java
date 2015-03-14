@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 public class TripsTrapsTrull {
 
+
     public static void main(String[] args) throws Exception {
 
         System.out.println("Tere tulemast mängima Trips-Traps-Trulli!");
@@ -14,13 +15,15 @@ public class TripsTrapsTrull {
         //boolean mängu_jätk = true;
         Scanner sc = new Scanner(System.in);
         ArrayList<Integer> järjend = new ArrayList<Integer>();
+        ArrayList<Integer> arvuti_käigud = new ArrayList<Integer>();
         ArrayList<String> käigud = new ArrayList<String>();
         for (int a =0; a < 9; a++) {
             järjend.add(a);
             käigud.add("");
+            arvuti_käigud.add(a);
         }
 
-        Mängulaud a = new Mängulaud(järjend, käigud);
+        Mängulaud a = new Mängulaud(järjend, arvuti_käigud, käigud);
 
         while (true) {
             System.out.println(a);
@@ -35,6 +38,10 @@ public class TripsTrapsTrull {
             else {
                 käigud.set(number, "X");
                 a.setKäigud(käigud);
+                int arvuti_number = a.teeKaik();
+                käigud.set(arvuti_number, "O");
+                a.setKäigud(käigud);
+
             }
         }
 
