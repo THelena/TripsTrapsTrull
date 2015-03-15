@@ -6,118 +6,177 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class Mängulaud {
-    private ArrayList<Integer> ruudud;
+    //Isendid
     private ArrayList<Integer> arvuti_käigud;
     private ArrayList<String> käigud;
     Random juhuslikkus = new Random();
 
-    public Mängulaud(ArrayList<Integer> ruudud, ArrayList<Integer> arvuti_käigud, ArrayList<String> käigud) {
-        this.ruudud = ruudud;
+    //konstruktor
+    public Mängulaud(ArrayList<Integer> arvuti_käigud, ArrayList<String> käigud) {
         this.arvuti_käigud = arvuti_käigud;
         this.käigud = käigud;
     }
 
-     public ArrayList<String> getKäigud() {
-        return käigud;
-    }
-
-    public void setKäigud(ArrayList<String> käigud) {
+     public void setKäigud(ArrayList<String> käigud) {
         this.käigud = käigud;
     }
 
-    int väike_kontroll(ArrayList l, String sümbol){
-        int tühja_sagedus = Collections.frequency(l,"");
-        int sümboli_sagedus = Collections.frequency(l, sümbol);
-        if (tühja_sagedus ==0){
+    //Kontrollime kas kolmeelemendilises listis on üks tühi sõne ja kaks samasugust sümbolit- ehk võiduseis
+    int kahe_elemendi_kontroll(ArrayList järjend, String sümbol){
+        int tühja_sagedus = Collections.frequency(järjend,"");
+        int sümboli_sagedus = Collections.frequency(järjend, sümbol);
+        if (tühja_sagedus == 0){
             return -1;
         }
-        else if(sümboli_sagedus==2){
-            int indeks = l.indexOf("");
+        else if(sümboli_sagedus == 2){
+            int indeks = järjend.indexOf("");
             return indeks;
         }
         else{
             return -1;
         }
     }
-
-    int suur_meetod(String sümbol){
+    //Kontrollime, kas kolmeelemendilises listis on arvuti sümbol ja ülejäänud list on vaba (ehk kas on mõtet sinna listi enda võitu teostama hakata)
+    int ühe_elemendi_kontroll(ArrayList järjend, String sümbol) {
+        int tühja_sagedus = Collections.frequency(järjend,"");
+        if (tühja_sagedus != 2) {
+            return -1;
+        }
+        else if (järjend.contains("X")) {
+            return -1;
+        }
+        else {
+            int number = juhuslikkus.nextInt(2);
+            if (number == 0) {
+                return järjend.indexOf("");
+            }
+            else {
+                return järjend.lastIndexOf("");
+            }
+        }
+    }
+    //Kontrollime, kas arvutil on võimalik võita. Kui ei, siis kontrollime kas inimesel on võimalik võita ja üritame seda takistada
+    int võidukäik(String sümbol){
         ArrayList<String> väike_list = new ArrayList<String>();
-        for (int u = 0; u<7; u+=3){
+        //Kontrollime ridade võimalikke käike
+        for (int u = 0; u < 7; u += 3){
             väike_list.add(käigud.get(u));
             väike_list.add(käigud.get(u+1));
             väike_list.add(käigud.get(u+2));
-            if (väike_kontroll(väike_list,sümbol)!=-1){
-                return u+väike_kontroll(väike_list,sümbol);
+            if (kahe_elemendi_kontroll(väike_list, sümbol)!=-1){
+                return u + kahe_elemendi_kontroll(väike_list, sümbol); //sobivaim käik
             }
-            väike_list.clear();
+            väike_list.clear(); //teeme väikse listi tühjaks uue rea/veeru kontrollimiseks
         }
+        //Kontrollime veergude võimalikke käike
         for (int k = 0; k<3; k++){
             väike_list.add(käigud.get(k));
             väike_list.add(käigud.get(k+3));
             väike_list.add(käigud.get(k+6));
-            if (väike_kontroll(väike_list,sümbol)!=-1){
-                return k+väike_kontroll(väike_list,sümbol)*3;
+            if (kahe_elemendi_kontroll(väike_list, sümbol)!=-1){
+                return k + kahe_elemendi_kontroll(väike_list, sümbol)*3; //sobivaim käik
             }
-            väike_list.clear();
+            väike_list.clear(); //tühjendame listi
             }
-
+        //1. diagonaali võimalik käik
         väike_list.add(käigud.get(0));
         väike_list.add(käigud.get(4));
         väike_list.add(käigud.get(8));
-        if (väike_kontroll(väike_list,sümbol)!=-1){
-            return väike_kontroll(väike_list,sümbol)*4;
+        if (kahe_elemendi_kontroll(väike_list, sümbol)!=-1){
+            return kahe_elemendi_kontroll(väike_list, sümbol)*4;
         }
-        väike_list.clear();
-
+        väike_list.clear(); //tühjendame listi
+        //2. diagonaali võimalik käik
         väike_list.add(käigud.get(2));
         väike_list.add(käigud.get(4));
         väike_list.add(käigud.get(6));
-        if (väike_kontroll(väike_list,sümbol)!=-1){
-            return 2+väike_kontroll(väike_list,sümbol)*2;
+        if (kahe_elemendi_kontroll(väike_list, sümbol)!=-1){
+            return 2 + kahe_elemendi_kontroll(väike_list, sümbol)*2;
         }
-        väike_list.clear();
+        väike_list.clear(); //tühjendame listi
 
-        return -1;
+        return -1; //kui ei olnud võimalikku võidukäiku või võidu takistamise käiku, siis tagastame -1
     }
+    //Kontrollime, kas arvutil on selline seis, et reas/veerus/diagonaalil on üks tema sümbol ja ülejäänud on tühjad ehk sinna võimalik võitu looma minna
+    int teise_elemendi_käik (String sümbol) {
+        ArrayList<String> väike_list = new ArrayList<String>();
+        //Kontrollime ridade võimalikke käike
+        for (int u = 0; u < 7; u += 3){
+            väike_list.add(käigud.get(u));
+            väike_list.add(käigud.get(u+1));
+            väike_list.add(käigud.get(u+2));
+            if (ühe_elemendi_kontroll(väike_list, sümbol) != -1){
+                return u + ühe_elemendi_kontroll(väike_list, sümbol); //sobivaim käik
+            }
+            väike_list.clear(); //teeme väikse listi tühjaks uue rea/veeru kontrollimiseks
+        }
+        //Kontrollime veergude võimalikke käike
+        for (int k = 0; k<3; k++){
+            väike_list.add(käigud.get(k));
+            väike_list.add(käigud.get(k+3));
+            väike_list.add(käigud.get(k+6));
+            if (ühe_elemendi_kontroll(väike_list, sümbol)!= -1){
+                return k + ühe_elemendi_kontroll(väike_list, sümbol)*3; //sobivaim käik
+            }
+            väike_list.clear(); //tühjendame listi
+        }
+        //1. diagonaali võimalik käik
+        väike_list.add(käigud.get(0));
+        väike_list.add(käigud.get(4));
+        väike_list.add(käigud.get(8));
+        if (ühe_elemendi_kontroll(väike_list, sümbol)!= -1){
+            return ühe_elemendi_kontroll(väike_list, sümbol)*4;
+        }
+        väike_list.clear(); //tühjendame listi
+        //2. diagonaali võimalik käik
+        väike_list.add(käigud.get(2));
+        väike_list.add(käigud.get(4));
+        väike_list.add(käigud.get(6));
+        if (ühe_elemendi_kontroll(väike_list, sümbol)!= -1){
+            return 2 + ühe_elemendi_kontroll(väike_list, sümbol)*2;
+        }
+        väike_list.clear(); //tühjendame listi
 
+        return -1; //kui ei olnud sobilikku käiku, siis tagastame -1
+    }
 
     int teeKaik() {
-        if (suur_meetod("O")!=-1){
-            return suur_meetod("O");
+        if (võidukäik("O") != -1){
+            return võidukäik("O");
         }
-        else if (suur_meetod("X")!=-1){
-            return suur_meetod(("X"));
+        else if (võidukäik("X")!= -1){
+            return võidukäik(("X"));
         }
-
-        for (int i =0; i < 9; i++) {
-            if (käigud.get(i).equals("X") || käigud.get(i).equals("O")) {
-                if(arvuti_käigud.contains(i)) {
-                    arvuti_käigud.remove(new Integer(i));
+        else if (teise_elemendi_käik("O") != -1) {
+            return teise_elemendi_käik("O");
+        }
+        else {
+            for (int i = 0; i < 9; i++) {
+                if (käigud.get(i).equals("X") || käigud.get(i).equals("O")) {
+                    if (arvuti_käigud.contains(i)) {
+                        arvuti_käigud.remove(new Integer(i)); //jätame alles ainult võimalikud käigud
+                    }
                 }
             }
+            int number = juhuslikkus.nextInt(arvuti_käigud.size());
+            return arvuti_käigud.get(number); //tagastame võimalikest käikudest täiesti suvalise käigu
         }
-
-        System.out.println(arvuti_käigud);
-        int number = juhuslikkus.nextInt(arvuti_käigud.size());
-        System.out.println(number);
-        System.out.println(arvuti_käigud.get(number));
-        return arvuti_käigud.get(number);
-
     }
 
-
-    boolean Kontroll(String võistleja){
-        for (int u = 0; u<7; u+=3){
+    boolean kontroll(String võistleja){
+        //Kontrollime ridade võitu
+        for (int u = 0; u < 7; u += 3){
             if (käigud.get(u).equals(võistleja) && käigud.get(u+1).equals(võistleja)&&käigud.get(u+2).equals(võistleja)){
                 return true;
             }
         }
-        for (int k = 0; k<3; k++){
+        //Kontrollime veergude võitu
+        for (int k = 0; k < 3; k++){
             if (käigud.get(k).equals(võistleja) && käigud.get(k+3).equals(võistleja)&&käigud.get(k+6).equals(võistleja)){
                 return true;
             }
         }
-
+        //Kontrollime diagonaalide võitu
         if (käigud.get(0).equals(võistleja) && käigud.get(4).equals(võistleja)&&käigud.get(8).equals(võistleja)){
             return true;
         }
@@ -128,9 +187,7 @@ public class Mängulaud {
         else{
             return false;
         }
-
     }
-
 
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -144,24 +201,23 @@ public class Mängulaud {
                     sb.append("| " + käigud.get(u) + " | ");
                 }
                 else {
-                    sb.append("| " + ruudud.get(u) + " | ");
+                    sb.append("| " + u + " | ");
                 }
                 if (käigud.get(u+1).equals("X") || käigud.get(u+1).equals("O")){
                     sb.append(käigud.get(u + 1) + " | ");
                 }
                 else {
-                    sb.append(ruudud.get(u + 1) + " | ");
+                    sb.append((u + 1) + " | ");
                 }
                 if (käigud.get(u+2).equals("X") || käigud.get(u+2).equals("O")) {
                     sb.append(käigud.get(u + 2) + " |" + "\n");
                 }
                 else {
-                    sb.append(ruudud.get(u + 2) + " |" + "\n");
+                    sb.append((u + 2) + " |" + "\n");
                 }
                 u += 3;
             }
         }
         return sb.toString();
     }
-
 }

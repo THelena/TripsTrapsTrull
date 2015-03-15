@@ -7,58 +7,52 @@ public class TripsTrapsTrull {
 
 
     public static void main(String[] args) throws Exception {
-
+        //Tervitus
         System.out.println("Tere tulemast mängima Trips-Traps-Trulli!");
-        System.out.println("Teie olete X ja arvuti on 0.");
+        System.out.println("Teie olete X ja arvuti on O. Ärge ajage nulli ja O-d segamini!");
         System.out.println("Edukat mängimist!");
 
-        //boolean mängu_jätk = true;
+        //Vajalikud listid, nende loomine, skänner
         Scanner sc = new Scanner(System.in);
-        ArrayList<Integer> järjend = new ArrayList<Integer>();
-        ArrayList<Integer> arvuti_käigud = new ArrayList<Integer>();
-        ArrayList<String> käigud = new ArrayList<String>();
+        ArrayList<Integer> arvuti_käigud = new ArrayList<Integer>(); //seda vaja arvuti täiesti suvalise käigu genereerimiseks
+        ArrayList<String> käigud = new ArrayList<String>(); //Salvestame indeksile vastava ruudu sees oleva märgi ("X" või "O", "" kui keegi pole sinna käinud)
         for (int a =0; a < 9; a++) {
-            järjend.add(a);
             käigud.add("");
-            arvuti_käigud.add(a);
+            arvuti_käigud.add(a); //alguses on arvuti jaoks kõik käigud võimalikud
         }
 
-        Mängulaud a = new Mängulaud(järjend, arvuti_käigud, käigud);
+        Mängulaud laud = new Mängulaud(arvuti_käigud, käigud);
 
-        while (true) {
-            System.out.println(a);
+        while (true) { //jätkame senikaua kuni mäng on lõppenud
+            System.out.println(laud);
             System.out.println("Millisesse ruutu soovite oma käigu teha? ");
             int number = sc.nextInt();
-            if (käigud.get(number).equals("X") || käigud.get(number).equals("O")) {
+            if (käigud.get(number).equals("X") || käigud.get(number).equals("O")) {  //kontrollime kas antud ruutu on üldsegi võimalik käia
                 System.out.println("Sinna ruutu ei ole võimalik kahjuks käia!");
             }
             else {
                 käigud.set(number, "X");
-                a.setKäigud(käigud);
-                System.out.println(a.getKäigud());
-                if (a.Kontroll("X") == true) {
-                    System.out.println(a);
+                laud.setKäigud(käigud); //uuendame käikude listi
+                if (laud.kontroll("X") == true) { //kontrollime võitu
+                    System.out.println(laud);
                     System.out.println("Olete võitnud!");
                     break;
                 }
-                if (!käigud.contains("")) {
+                if (!käigud.contains("")) { //kontrollime viiki (ainult pärast inimese käiku on võimalik viigiseis)
                     System.out.println("Olete jäänud viiki!");
                     break;
                 }
 
-                int arvuti_number = a.teeKaik();
+                int arvuti_number = laud.teeKaik(); //arvuti teeb oma käigu
                 käigud.set(arvuti_number, "O");
-                a.setKäigud(käigud);
-                if (a.Kontroll("O") == true) {
-                    System.out.println(a);
+                laud.setKäigud(käigud); //uuendame käikude listi
+                if (laud.kontroll("O") == true) { //kontrollime võitu
+                    System.out.println(laud);
                     System.out.println("Olete kaotanud! Vahest peaksite strateegiat muutma?");
                     break;
                 }
+                //jätkame, kui keegi pole võitnud ega pole ka viigiseis
             }
         }
-
-
-
-
     }
 }
