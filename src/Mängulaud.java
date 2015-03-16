@@ -6,14 +6,12 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class Mängulaud {
-    //Isendid
-    private ArrayList<Integer> arvuti_käigud;
+    //Isend
     private ArrayList<String> käigud;
     Random juhuslikkus = new Random();
 
     //konstruktor
-    public Mängulaud(ArrayList<Integer> arvuti_käigud, ArrayList<String> käigud) {
-        this.arvuti_käigud = arvuti_käigud;
+    public Mängulaud(ArrayList<String> käigud) {
         this.käigud = käigud;
     }
 
@@ -151,15 +149,17 @@ public class Mängulaud {
             return teise_elemendi_käik("O");
         }
         else {
+            ArrayList<Integer> võimalikud_käigud = new ArrayList<Integer>();
             for (int i = 0; i < 9; i++) {
                 if (käigud.get(i).equals("X") || käigud.get(i).equals("O")) {
-                    if (arvuti_käigud.contains(i)) {
-                        arvuti_käigud.remove(new Integer(i)); //jätame alles ainult võimalikud käigud
-                    }
+                    continue;
+                }
+                else {
+                    võimalikud_käigud.add(i);
                 }
             }
-            int number = juhuslikkus.nextInt(arvuti_käigud.size());
-            return arvuti_käigud.get(number); //tagastame võimalikest käikudest täiesti suvalise käigu
+            int indeks = juhuslikkus.nextInt(võimalikud_käigud.size());
+            return võimalikud_käigud.get(indeks); //tagastame võimalikest käikudest täiesti suvalise käigu
         }
     }
 
@@ -188,7 +188,7 @@ public class Mängulaud {
             return false;
         }
     }
-
+    //Ilusa ruudustiku printimine
     public String toString() {
         StringBuilder sb = new StringBuilder();
         int u = 0;

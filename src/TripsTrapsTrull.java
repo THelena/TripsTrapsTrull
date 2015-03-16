@@ -5,23 +5,20 @@ import java.util.ArrayList;
 import java.util.Scanner;
 public class TripsTrapsTrull {
 
-
     public static void main(String[] args) throws Exception {
         //Tervitus
         System.out.println("Tere tulemast mängima Trips-Traps-Trulli!");
         System.out.println("Teie olete X ja arvuti on O. Ärge ajage nulli ja O-d segamini!");
         System.out.println("Edukat mängimist!");
 
-        //Vajalikud listid, nende loomine, skänner
+        //Vajalik list, selle loomine, skänner
         Scanner sc = new Scanner(System.in);
-        ArrayList<Integer> arvuti_käigud = new ArrayList<Integer>(); //seda vaja arvuti täiesti suvalise käigu genereerimiseks
         ArrayList<String> käigud = new ArrayList<String>(); //Salvestame indeksile vastava ruudu sees oleva märgi ("X" või "O", "" kui keegi pole sinna käinud)
         for (int a =0; a < 9; a++) {
             käigud.add("");
-            arvuti_käigud.add(a); //alguses on arvuti jaoks kõik käigud võimalikud
         }
 
-        Mängulaud laud = new Mängulaud(arvuti_käigud, käigud);
+        Mängulaud laud = new Mängulaud(käigud);
 
         while (true) { //jätkame senikaua kuni mäng on lõppenud
             System.out.println(laud);
