@@ -6,10 +6,7 @@ import java.util.Scanner;
 public class TripsTrapsTrull {
 
     public static void main(String[] args) throws Exception {
-        //Tervitus
-        System.out.println("Tere tulemast mängima Trips-Traps-Trulli!");
-        System.out.println("Teie olete X ja arvuti on O. Ärge ajage nulli ja O-d segamini!");
-        System.out.println("Edukat mängimist!");
+        int muutuja = 0;
 
         //Vajalik list, selle loomine, skänner
         Scanner sc = new Scanner(System.in);
@@ -18,28 +15,43 @@ public class TripsTrapsTrull {
             käigud.add("");
         }
 
+        //Tervitus
+        System.out.println("Tere tulemast mängima Trips-Traps-Trulli!");
+        System.out.println("Kas soovite alustad? (JAH/EI)");
+        String sisestus = sc.nextLine();
+        if (sisestus.equals("JAH")) {
+            muutuja = 0;
+        }
+        else {
+            muutuja = 1;
+        }
+        System.out.println("Edukat mängimist!");
+
         Mängulaud laud = new Mängulaud(käigud);
 
         while (true) { //jätkame senikaua kuni mäng on lõppenud
-            System.out.println(laud);
-            System.out.println("Millisesse ruutu soovite oma käigu teha? ");
-            int number = sc.nextInt();
-            if (käigud.get(number).equals("X") || käigud.get(number).equals("O")) {  //kontrollime kas antud ruutu on üldsegi võimalik käia
-                System.out.println("Sinna ruutu ei ole võimalik kahjuks käia!");
+            if (muutuja % 2 == 0) {
+                System.out.println(laud);
+                System.out.println("Millisesse ruutu soovite oma käigu teha? ");
+                int number = sc.nextInt();
+                if (käigud.get(number).equals("X") || käigud.get(number).equals("O")) {  //kontrollime kas antud ruutu on üldsegi võimalik käia
+                    System.out.println("Sinna ruutu ei ole võimalik kahjuks käia!");
+                } else {
+                    käigud.set(number, "X");
+                    laud.setKäigud(käigud); //uuendame käikude listi
+                    if (laud.kontroll("X") == true) { //kontrollime võitu
+                        System.out.println(laud);
+                        System.out.println("Olete võitnud!");
+                        break;
+                    }
+                    if (!käigud.contains("")) { //kontrollime viiki (ainult pärast inimese käiku on võimalik viigiseis)
+                        System.out.println("Olete jäänud viiki!");
+                        break;
+                    }
+                }
+                muutuja += 1;
             }
             else {
-                käigud.set(number, "X");
-                laud.setKäigud(käigud); //uuendame käikude listi
-                if (laud.kontroll("X") == true) { //kontrollime võitu
-                    System.out.println(laud);
-                    System.out.println("Olete võitnud!");
-                    break;
-                }
-                if (!käigud.contains("")) { //kontrollime viiki (ainult pärast inimese käiku on võimalik viigiseis)
-                    System.out.println("Olete jäänud viiki!");
-                    break;
-                }
-
                 int arvuti_number = laud.teeKaik(); //arvuti teeb oma käigu
                 käigud.set(arvuti_number, "O");
                 laud.setKäigud(käigud); //uuendame käikude listi
@@ -48,8 +60,9 @@ public class TripsTrapsTrull {
                     System.out.println("Olete kaotanud! Vahest peaksite strateegiat muutma?");
                     break;
                 }
+                muutuja += 1;
+                }
                 //jätkame, kui keegi pole võitnud ega pole ka viigiseis
             }
         }
     }
-}
