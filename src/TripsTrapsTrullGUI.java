@@ -1,5 +1,6 @@
 import javafx.application.Application;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -9,6 +10,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -30,7 +32,7 @@ public class TripsTrapsTrullGUI extends Application {
     int tagastaRuut (double x, double y) {
         double külg = ruudud.get(0).getWidth();
         System.out.println(külg);
-        System.out.println(ruudud.get(2).getX());
+        System.out.println(ruudud.get(2).getLayoutY());
 
         for (int i = 0; i < ruudud.size(); i++) {
             //double x_koordinaat = ruudud.get(i).getX();
@@ -87,9 +89,9 @@ public class TripsTrapsTrullGUI extends Application {
 
                     //-------------------------------------------------------------
                     Group juur = new Group();
-                    Text tekst = new Text("Oma käigu tegemiseks vajuta soovitud ruutu.");
+                    Text tekst = new Text("Mängu alustamiseks vali, kes teeb esimese käigu. Oma käigu tegemiseks vajuta soovitud ruutu. Edukat mängimist, " + inimese_nimi + "!");
                     tekst.setTextAlignment(TextAlignment.CENTER);
-                    tekst.setFont(new Font(20));
+                    tekst.setFont(new Font(15));
                     tekst.setLayoutX(100);
                     tekst.setLayoutY(50);
                     tekst.setWrappingWidth(300);
@@ -97,9 +99,54 @@ public class TripsTrapsTrullGUI extends Application {
 
                     Button tulemus = new Button();
                     tulemus.setText("Tulemused");
-                    tulemus.setLayoutX(100);
+                    tulemus.setLayoutX(325);
                     tulemus.setLayoutY(450);
                     juur.getChildren().add(tulemus);
+                    tulemus.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                        @Override
+                        public void handle(MouseEvent event) {
+                            final Stage tulemused = new Stage();
+                            tulemused.initModality(Modality.APPLICATION_MODAL);
+                            tulemused.initOwner(mäng);
+                            GridPane tulemuseTabel = new GridPane();
+                            ColumnConstraints col1 = new ColumnConstraints();
+                            col1.setPercentWidth(50);
+                            ColumnConstraints col2 = new ColumnConstraints();
+                            col2.setPercentWidth(25);
+                            ColumnConstraints col3 = new ColumnConstraints();
+                            col3.setPercentWidth(25);
+                            tulemuseTabel.getColumnConstraints().addAll(col1, col2, col3);
+                            tulemuseTabel.setHgap(10);
+                            tulemuseTabel.setVgap(10);
+                            tulemuseTabel.setPadding(new Insets(0, 10, 0, 10));
+                            Text nimi = new Text("Nimi");
+                            Text võidud = new Text("Võite kokku");
+                            Text kaotused = new Text("Kaotusi kokku");
+
+
+                            tulemuseTabel.add(nimi, 0, 0);
+                            tulemuseTabel.add(võidud, 1, 0);
+                            tulemuseTabel.add(kaotused, 2, 0);
+
+
+                            Scene tulemuseStseen = new Scene(tulemuseTabel, 300, 100);
+                            tulemused.setScene(tulemuseStseen);
+                            tulemused.show();
+                        }
+                    });
+
+                    Button uus_mäng = new Button();
+                    uus_mäng.setText("Uus mäng");
+                    uus_mäng.setLayoutX(100);
+                    uus_mäng.setLayoutY(450);
+                    uus_mäng.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                        @Override
+                        public void handle(MouseEvent event) {
+                            //tuleb uus mäng kuidagi, clear vana stage ja tee uus kuidagi
+                        }
+                    });
+                    juur.getChildren().add(uus_mäng);
+
 
                     //Ruudustik
                     GridPane gp = new GridPane();
@@ -138,6 +185,7 @@ public class TripsTrapsTrullGUI extends Application {
                     gp.setLayoutX(100);
                     gp.setLayoutY(100);
                     juur.getChildren().add(gp);
+                    System.out.println(gp.getWidth());
 
 
 
