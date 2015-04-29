@@ -3,6 +3,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -32,7 +33,7 @@ public class TripsTrapsTrullGUI extends Application {
     int tagastaRuut (double x, double y) {
         double külg = ruudud.get(0).getWidth();
         System.out.println(külg);
-        System.out.println(ruudud.get(2).getLayoutY());
+        System.out.println(ruudud.get(2));
 
         for (int i = 0; i < ruudud.size(); i++) {
             //double x_koordinaat = ruudud.get(i).getX();
@@ -50,7 +51,6 @@ public class TripsTrapsTrullGUI extends Application {
 
         GridPane gp = new GridPane();
         BorderPane bp = new BorderPane();
-
         Text tervitus = new Text();
         tervitus.setText("Tere tulemast mängima Trips-Traps-Trulli!");
         tervitus.setTextAlignment(TextAlignment.CENTER);
@@ -150,49 +150,49 @@ public class TripsTrapsTrullGUI extends Application {
 
                     //Ruudustik
                     GridPane gp = new GridPane();
-                    for (int i = 0; i < 9; i++) {
-                        StackPane kuhi = new StackPane();
-                        Text ruudu_tekst = new Text(" ");
-                        ruudu_tekst.setFont(new Font(40));
-                        ruudu_tekstid.add(ruudu_tekst);
-                        Rectangle ruut = new Rectangle(100, 100);
-                        ruut.setFill(Color.WHITE);
-                        ruut.setStroke(Color.BLACK);
-                        ruut.setArcWidth(20);
-                        ruut.setArcHeight(20);
-                        ruut.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                            @Override
-                            public void handle(MouseEvent event) {
-                                System.out.println(event.getX());
-                                System.out.println(event.getY());
-                                System.out.println(tagastaRuut(event.getX(), event.getY()));
-                            }
-                        });
-                        ruudud.add(ruut);
-                        kuhi.getChildren().addAll(ruut,ruudu_tekst);
-                        if (i > 2 && i < 6) {
-                            gp.add(kuhi, i % 3, 1);
-                        }
-                        else if (i < 3) {
-                            gp.add(kuhi, i, 0);
-                        }
-                        else {
-                            gp.add(kuhi, i % 3 ,2);
+                    for (int i = 0; i < 3; i++) {
+                        for (int j = 0; j < 3; j++) {
+                            StackPane kuhi = new StackPane();
+                            Text ruudu_tekst = new Text(" ");
+                            ruudu_tekst.setFont(new Font(40));
+                            ruudu_tekstid.add(ruudu_tekst);
+                            Rectangle ruut = new Rectangle(100, 100);
+                            ruut.setFill(Color.WHITE);
+                            ruut.setStroke(Color.BLACK);
+                            ruut.setArcWidth(20);
+                            ruut.setArcHeight(20);
+                            ruudud.add(ruut);
+                            kuhi.getChildren().addAll(ruut, ruudu_tekst);
+                            gp.add(kuhi,i,j);
                         }
                     }
-
 
                     gp.setLayoutX(100);
                     gp.setLayoutY(100);
                     juur.getChildren().add(gp);
                     System.out.println(gp.getWidth());
 
-
-
                     //--------------------------------------------------------------
                     Scene mänguStseen = new Scene(juur, 500, 500);
                     mäng.setScene(mänguStseen);
                     mäng.show();
+
+                    gp.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+                        @Override
+                        public void handle(MouseEvent event) {
+                            for (Node node: gp.getChildren()){
+                                if (node instanceof StackPane){
+                                    if (node.getBoundsInParent().contains(event.getSceneX()-100,event.getSceneY()-100)){
+                                        System.out.println("Node: "+node+ " at "+gp.getRowIndex(node)+"/"+gp.getColumnIndex(node));
+                                        System.out.println(node.getBoundsInParent());
+                                        System.out.println(event.getSceneX()+"/"+event.getSceneY());
+                                        System.out.println(gp.getRowIndex(node)+"/"+gp.getColumnIndex(node));
+                                        System.out.println();
+                                    }
+                                }
+                            }
+                        }
+                    });
                     //MÄNGUPLATSI TEGEMINE LÕPPEB
                 }
             }
@@ -214,5 +214,6 @@ public class TripsTrapsTrullGUI extends Application {
 
     public static void main(String[] args) {
         launch();
+
     }
 }
