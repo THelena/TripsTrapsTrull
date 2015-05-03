@@ -7,6 +7,8 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -28,24 +30,8 @@ import java.util.List;
 public class TripsTrapsTrullGUI extends Application {
     static List<Text> ruudu_tekstid = new ArrayList<>();
     static List<Rectangle> ruudud = new ArrayList<>();
-    static int a = 0;
 
-    int tagastaRuut (double x, double y) {
-        double külg = ruudud.get(0).getWidth();
-        System.out.println(külg);
-        System.out.println(ruudud.get(2));
 
-        for (int i = 0; i < ruudud.size(); i++) {
-            //double x_koordinaat = ruudud.get(i).getX();
-            //double y_koordinaat = ruudud.get(i).getY();
-            //System.out.println(y_koordinaat);
-            //System.out.println(x_koordinaat);
-            //if (x >= x_koordinaat && x <= x_koordinaat + külg && y >= y_koordinaat && y <= y_koordinaat + külg) {
-            //    return i;
-            // }
-        }
-        return 10;
-    }
     Group tervitusAken(Stage peaLava) {
         Group juur = new Group();
 
@@ -142,7 +128,22 @@ public class TripsTrapsTrullGUI extends Application {
                     uus_mäng.setOnMouseClicked(new EventHandler<MouseEvent>() {
                         @Override
                         public void handle(MouseEvent event) {
-                            //tuleb uus mäng kuidagi, clear vana stage ja tee uus kuidagi
+                            Image võit = new Image("file:sun.png");
+                            //Image viik = new Image("file:pokerface.jpg");
+                            //Image kaotus = new Image("file:sad.jpg");
+
+                            //ImageView iv1 = new ImageView();
+                            //iv1.setImage(võit);
+                            ImageView iv2 = new ImageView();
+                            iv2.setImage(võit);
+                            iv2.setFitHeight(100);
+                            iv2.setFitWidth(100);
+                            iv2.setPreserveRatio(true);
+                            iv2.setSmooth(true);
+                            iv2.setCache(true);
+                            iv2.setLayoutX(400);
+                            iv2.setLayoutY(400);
+                            juur.getChildren().add(iv2);
                         }
                     });
                     juur.getChildren().add(uus_mäng);
@@ -163,7 +164,7 @@ public class TripsTrapsTrullGUI extends Application {
                             ruut.setArcHeight(20);
                             ruudud.add(ruut);
                             kuhi.getChildren().addAll(ruut, ruudu_tekst);
-                            gp.add(kuhi,i,j);
+                            gp.add(kuhi, i, j);
                         }
                     }
 
@@ -180,14 +181,23 @@ public class TripsTrapsTrullGUI extends Application {
                     gp.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
                         @Override
                         public void handle(MouseEvent event) {
-                            for (Node node: gp.getChildren()){
+                            for (Node node : gp.getChildren()) {
                                 if (node instanceof StackPane){
                                     if (node.getBoundsInParent().contains(event.getSceneX()-100,event.getSceneY()-100)){
-                                        System.out.println("Node: "+node+ " at "+gp.getRowIndex(node)+"/"+gp.getColumnIndex(node));
-                                        System.out.println(node.getBoundsInParent());
-                                        System.out.println(event.getSceneX()+"/"+event.getSceneY());
-                                        System.out.println(gp.getRowIndex(node)+"/"+gp.getColumnIndex(node));
+                                        int rida = gp.getRowIndex(node);
+                                        int veerg = gp.getColumnIndex(node);
+                                        int kast;
                                         System.out.println();
+                                        if(rida == 0) {
+                                            kast = veerg;
+                                        }
+                                        else if(rida == 1) {
+                                            kast = veerg + 3;
+                                        }
+                                        else {
+                                            kast = veerg + 6;
+                                        }
+                                        System.out.println(kast);
                                     }
                                 }
                             }
