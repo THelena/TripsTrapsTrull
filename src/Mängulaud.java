@@ -15,7 +15,7 @@ public class Mängulaud {
         this.käigud = käigud;
     }
 
-     public void setKäigud(ArrayList<String> käigud) {
+    public void setKäigud(ArrayList<String> käigud) {
         this.käigud = käigud;
     }
 

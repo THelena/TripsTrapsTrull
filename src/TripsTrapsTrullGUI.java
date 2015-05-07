@@ -1,12 +1,14 @@
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -23,16 +25,21 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class TripsTrapsTrullGUI extends Application {
     static List<Text> ruudu_tekstid = new ArrayList<>();
-    static List<Rectangle> ruudud = new ArrayList<>();
-
+    static String alustaja = "arvuti";
+    static ArrayList<String> käigud = new ArrayList<String>();
+    static int käik;
+    static boolean käikTehtud = false;
+    static String tulemuseSõne = "võit";
+    static String inimese_nimi;
 
     Group tervitusAken(Stage peaLava) {
+        //AVAAKNA TEKSTID, NUPUD JMS ASJAD
         Group juur = new Group();
 
         GridPane gp = new GridPane();
@@ -47,35 +54,70 @@ public class TripsTrapsTrullGUI extends Application {
         juur.getChildren().add(tervitus);
 
         Text juhis = new Text();
-        juhis.setText("Alustamiseks sisesta oma nimi ja vajuta ENTER.");
+        juhis.setText("Alustamiseks vali, kes teeb esimese käigu, sisesta oma nimi ja vajuta ENTER.");
         juhis.setTextAlignment(TextAlignment.CENTER);
         juhis.setWrappingWidth(300);
         juhis.setLayoutX(100);
         juhis.setLayoutY(80);
         juur.getChildren().add(juhis);
 
+        ToggleGroup raadionupud = new ToggleGroup();
+        RadioButton arvuti = new RadioButton("Arvuti");
+        arvuti.setToggleGroup(raadionupud);
+        arvuti.setSelected(true);
+        RadioButton inimene = new RadioButton("Sina");
+        inimene.setToggleGroup(raadionupud);
+        arvuti.setLayoutX(250);
+        arvuti.setLayoutY(105);
+        inimene.setLayoutX(250);
+        inimene.setLayoutY(125);
+        Text alustajaTekst = new Text();
+        alustajaTekst.setText("Alustab: ");
+        alustajaTekst.setLayoutX(200);
+        alustajaTekst.setLayoutY(127);
+        arvuti.setUserData("arvuti");
+        inimene.setUserData("inimene");
+        //RAADIONUPU VÄÄRTUSE SAAMINE
+        raadionupud.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
+            @Override
+            public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
+                if (raadionupud.getSelectedToggle() != null) {
+                    alustaja = raadionupud.getSelectedToggle().getUserData().toString();
+                }
+            }
+        });
+        juur.getChildren().addAll(arvuti, inimene, alustajaTekst);
 
         TextField nimi = new TextField();
         nimi.setPromptText("Siia sisesta oma nimi.");
         nimi.setLayoutX(175);
-        nimi.setLayoutY(100);
+        nimi.setLayoutY(150);
         nimi.setAlignment(Pos.CENTER);
         juur.getChildren().add(nimi);
 
+        //ENTERI VAJUTAMINE AVAB MÄNGUAKNA
         nimi.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
                 if (event.getCode().equals(KeyCode.ENTER)) {
                     //MÄNGUPLATSI TEGEMINE
                     peaLava.close();
-                    String inimese_nimi = nimi.getText();
+                    inimese_nimi = nimi.getText();
                     final Stage mäng = new Stage();
                     mäng.initModality(Modality.APPLICATION_MODAL);
                     mäng.initOwner(peaLava);
 
+                    //LOOME MÄNGIMISEKS VAJALIKU LAUA, LISTI
+                    for (int a =0; a < 9; a++) {
+                        käigud.add("");
+                    }
+                    Mängulaud laud = new Mängulaud(käigud);
+
+
                     //-------------------------------------------------------------
+                    //MÄNGUAKNA TEKSTID, NUPUD JMS
                     Group juur = new Group();
-                    Text tekst = new Text("Mängu alustamiseks vali, kes teeb esimese käigu. Oma käigu tegemiseks vajuta soovitud ruutu. Edukat mängimist, " + inimese_nimi + "!");
+                    Text tekst = new Text("Oma käigu tegemiseks vajuta soovitud ruutu. Edukat mängimist, " + inimese_nimi + "!");
                     tekst.setTextAlignment(TextAlignment.CENTER);
                     tekst.setFont(new Font(15));
                     tekst.setLayoutX(100);
@@ -88,7 +130,9 @@ public class TripsTrapsTrullGUI extends Application {
                     tulemus.setLayoutX(325);
                     tulemus.setLayoutY(450);
                     juur.getChildren().add(tulemus);
+
                     tulemus.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                        //TULEMUSE NUPULE VAJUTAMINE AVAB TULEMUSTE TABELI
                         @Override
                         public void handle(MouseEvent event) {
                             final Stage tulemused = new Stage();
@@ -99,35 +143,142 @@ public class TripsTrapsTrullGUI extends Application {
                             col1.setPercentWidth(50);
                             ColumnConstraints col2 = new ColumnConstraints();
                             col2.setPercentWidth(25);
+                            col2.setHalignment(HPos.CENTER);
                             ColumnConstraints col3 = new ColumnConstraints();
                             col3.setPercentWidth(25);
-                            tulemuseTabel.getColumnConstraints().addAll(col1, col2, col3);
+                            col3.setHalignment(HPos.CENTER);
+                            ColumnConstraints col4 = new ColumnConstraints();
+                            col4.setPercentWidth(25);
+                            col4.setHalignment(HPos.CENTER);
+                            tulemuseTabel.getColumnConstraints().addAll(col1, col2, col3, col4);
                             tulemuseTabel.setHgap(10);
                             tulemuseTabel.setVgap(10);
                             tulemuseTabel.setPadding(new Insets(0, 10, 0, 10));
-                            Text nimi = new Text("Nimi");
-                            Text võidud = new Text("Võite kokku");
-                            Text kaotused = new Text("Kaotusi kokku");
+                            //----------------------------------------
+                            //FAILI KIRJUTAMINE
+                            if(!tulemuseSõne.equals("")) {
+                                System.out.println("ja");
+                                List<String> andmed = new ArrayList<String>();
+                                File fail = new File("tulemused.txt");
+                                try(BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(fail), "UTF-8"))) {
+                                    if(fail.exists()) {
+                                        String rida;
+                                        int i = 0;
+                                        while ((rida = br.readLine()) != null) {
+                                            String[] tükid = rida.split(";");
+                                            if(i == 0) {
+                                                andmed.add(tükid[0]);
+                                                andmed.add(tükid[1]);
+                                                andmed.add(tükid[2]);
+                                                andmed.add(tükid[3]);
+                                                i++;
+                                            }
+                                            else {
+                                                String nimi = tükid[0];
+                                                int võidud = Integer.parseInt(tükid[1]);
+                                                int viigid = Integer.parseInt(tükid[2]);
+                                                int kaotused = Integer.parseInt(tükid[3]);
+                                                if (inimese_nimi.equals(nimi)) {
+                                                    switch (tulemuseSõne) {
+                                                        case "võit":
+                                                            võidud++;
+                                                            break;
+                                                        case "kaotus":
+                                                            kaotused++;
+                                                            break;
+                                                        default:
+                                                            viigid++;
+                                                            break;
+                                                    }
+                                                }
+                                                andmed.add(nimi);
+                                                andmed.add(String.valueOf(võidud));
+                                                andmed.add(String.valueOf(viigid));
+                                                andmed.add(String.valueOf(kaotused));
+                                            }
+                                        }
+                                    }
+                                }
+                                catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                for (String anAndmed : andmed) {
+                                    System.out.println(anAndmed);
+                                }
+                                try(BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File("tulemused.txt")), "UTF-8"))) {
+                                    int i = 0;
+                                    while (i < andmed.size()) {
+                                        bw.write(andmed.get(i) + ";" + andmed.get(i+1) +
+                                                ";" + andmed.get(i+2) + ";" + andmed.get(i+3));
+                                        bw.write(System.getProperty("line.separator"));
+                                        i += 4;
+                                    }
+                                    if(!andmed.contains(inimese_nimi)) {
+                                        int võidud = 0;
+                                        int viigid = 0;
+                                        int kaotused = 0;
+                                        switch (tulemuseSõne) {
+                                            case "võit":
+                                                võidud++;
+                                                break;
+                                            case "kaotus":
+                                                kaotused++;
+                                                break;
+                                            default:
+                                                viigid++;
+                                                break;
+                                        }
+                                        bw.write(inimese_nimi + ";" + võidud + ";" + viigid + ";" + kaotused);
+                                        bw.write(System.getProperty("line.separator"));
+                                    }
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
 
+                            //FAILIST LUGEMINE
+                            File fail2 = new File("tulemused.txt");
+                            try(BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(fail2), "UTF-8"))) {
+                                if(!fail2.exists()) {
+                                    fail2.createNewFile();
+                                }
+                                String rida;
+                                int i = 0;
+                                while ((rida = br.readLine()) != null) {
+                                    String[] tükid = rida.split(";");
+                                    tulemuseTabel.add(new Text(tükid[0]), 0, i);
+                                    tulemuseTabel.add(new Text(tükid[1]), 1, i);
+                                    tulemuseTabel.add(new Text(tükid[2]), 2, i);
+                                    tulemuseTabel.add(new Text(tükid[3]), 3, i);
+                                    i++;
+                                }
+                            }
+                            catch (IOException e) {
+                                e.printStackTrace();
+                            }
 
-                            tulemuseTabel.add(nimi, 0, 0);
-                            tulemuseTabel.add(võidud, 1, 0);
-                            tulemuseTabel.add(kaotused, 2, 0);
+                            //------------------------------------------
 
-
-                            Scene tulemuseStseen = new Scene(tulemuseTabel, 300, 100);
+                            Scene tulemuseStseen = new Scene(tulemuseTabel, 400, 100);
                             tulemused.setScene(tulemuseStseen);
                             tulemused.show();
                         }
                     });
 
+
                     Button uus_mäng = new Button();
                     uus_mäng.setText("Uus mäng");
                     uus_mäng.setLayoutX(100);
                     uus_mäng.setLayoutY(450);
+                    //UUE MÄNGU NUPULE VAJUTAMINE LOOB UUE MÄNGUAKNA
                     uus_mäng.setOnMouseClicked(new EventHandler<MouseEvent>() {
                         @Override
                         public void handle(MouseEvent event) {
+                            mäng.close();
+                            peaLava.show();
+                            for (int i = 0; i < ruudu_tekstid.size(); i++) {
+                                ruudu_tekstid.get(i).setText("");
+                            }
                             Image võit = new Image("file:sun.png");
                             //Image viik = new Image("file:pokerface.jpg");
                             //Image kaotus = new Image("file:sad.jpg");
@@ -143,66 +294,105 @@ public class TripsTrapsTrullGUI extends Application {
                             iv2.setCache(true);
                             iv2.setLayoutX(400);
                             iv2.setLayoutY(400);
-                            juur.getChildren().add(iv2);
+                            //juur.getChildren().add(iv2);
                         }
                     });
                     juur.getChildren().add(uus_mäng);
 
-
+                    //LOOME MÄNGUAKNA RUUDUSTIKU
                     //Ruudustik
                     GridPane gp = new GridPane();
                     for (int i = 0; i < 3; i++) {
                         for (int j = 0; j < 3; j++) {
                             StackPane kuhi = new StackPane();
-                            Text ruudu_tekst = new Text(" ");
-                            ruudu_tekst.setFont(new Font(40));
+                            Text ruudu_tekst = new Text("");
+                            ruudu_tekst.setFont(new Font(70));
                             ruudu_tekstid.add(ruudu_tekst);
                             Rectangle ruut = new Rectangle(100, 100);
                             ruut.setFill(Color.WHITE);
                             ruut.setStroke(Color.BLACK);
                             ruut.setArcWidth(20);
                             ruut.setArcHeight(20);
-                            ruudud.add(ruut);
                             kuhi.getChildren().addAll(ruut, ruudu_tekst);
-                            gp.add(kuhi, i, j);
+                            gp.add(kuhi, j, i);
                         }
                     }
 
                     gp.setLayoutX(100);
                     gp.setLayoutY(100);
                     juur.getChildren().add(gp);
-                    System.out.println(gp.getWidth());
-
                     //--------------------------------------------------------------
                     Scene mänguStseen = new Scene(juur, 500, 500);
                     mäng.setScene(mänguStseen);
                     mäng.show();
 
+                    //RUUDULE VAJUTADES SAAME TEADA, KUHU RUUDULE VAJUTATI
                     gp.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
                         @Override
                         public void handle(MouseEvent event) {
                             for (Node node : gp.getChildren()) {
-                                if (node instanceof StackPane){
-                                    if (node.getBoundsInParent().contains(event.getSceneX()-100,event.getSceneY()-100)){
+                                if (node instanceof StackPane) {
+                                    if (node.getBoundsInParent().contains(event.getSceneX() - 100, event.getSceneY() - 100)) {
                                         int rida = gp.getRowIndex(node);
                                         int veerg = gp.getColumnIndex(node);
-                                        int kast;
-                                        System.out.println();
-                                        if(rida == 0) {
-                                            kast = veerg;
+                                        if (rida == 0) {
+                                            käik = veerg;
+                                        } else if (rida == 1) {
+                                            käik = veerg + 3;
+                                        } else {
+                                            käik = veerg + 6;
                                         }
-                                        else if(rida == 1) {
-                                            kast = veerg + 3;
-                                        }
-                                        else {
-                                            kast = veerg + 6;
-                                        }
-                                        System.out.println(kast);
+                                        käikTehtud = true;
                                     }
                                 }
                             }
                         }
                     });
+
+                    if (käikTehtud) {
+                        ruudu_tekstid.get(käik).setText("X");
+                        käigud.set(käik, "X");
+                        laud.setKäigud(käigud);
+                        int aruvti_käik = laud.teeKaik();
+                        ruudu_tekstid.get(aruvti_käik).setText("O");
+                    }
+
+
+                    /*if (käik != 10 || alustaja.equals("arvuti")) {
+                        while (true) {
+                            if (alustaja.equals("inimene") && käik != eelmine_käik) {
+                                if (käigud.get(käik).equals("X") || käigud.get(käik).equals("O")) {
+                                    System.out.println("see on paha");
+                                } else {
+                                    ruudu_tekstid.get(käik).setText("X");
+                                    käigud.set(käik, "X");
+                                    laud.setKäigud(käigud);
+                                    if (laud.kontroll("X")) {
+                                        System.out.println("VÕIT");
+                                        break;
+                                    }
+                                    if (!käigud.contains("")) {
+                                        System.out.println("VIIK");
+                                        break;
+                                    }
+                                }
+                                eelmine_käik = käik;
+                                alustaja = "arvuti";
+                            }
+                            else if(alustaja.equals("arvuti")) {
+                                int arvuti_number = laud.teeKaik();
+                                käigud.set(arvuti_number, "O");
+                                laud.setKäigud(käigud);
+                                if (laud.kontroll("O")) {
+                                    System.out.println("KAOTUS");
+                                    break;
+                                }
+                                alustaja = "inimene";
+
+                            }
+
+                        }
+                    }*/
                     //MÄNGUPLATSI TEGEMINE LÕPPEB
                 }
             }
@@ -214,7 +404,7 @@ public class TripsTrapsTrullGUI extends Application {
     @Override
     public void start(Stage peaLava) throws Exception {
 
-        Scene peaStseen = new Scene(tervitusAken(peaLava), 500, 150);
+        Scene peaStseen = new Scene(tervitusAken(peaLava), 500, 175);
         peaLava.setTitle("Trips-Traps-Trull");
         peaLava.setScene(peaStseen);
         peaLava.setResizable(false);
