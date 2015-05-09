@@ -98,12 +98,15 @@ public class TripsTrapsTrullGUI extends Application {
         //ENTERI VAJUTAMINE AVAB MÄNGUAKNA
         nimi.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
-            public void handle(KeyEvent event) {
+            public void handle(KeyEvent event){
                 if (event.getCode().equals(KeyCode.ENTER)) {
                     //MÄNGUPLATSI TEGEMINE
                     peaLava.close();
                     inimese_nimi = nimi.getText();
+
                     final Stage mäng = new Stage();
+                    mäng.setMinWidth(475);
+                    mäng.setMinHeight(475);
                     mäng.initModality(Modality.APPLICATION_MODAL);
                     mäng.initOwner(peaLava);
 
@@ -127,9 +130,6 @@ public class TripsTrapsTrullGUI extends Application {
 
                     Button tulemus = new Button();
                     tulemus.setText("Tulemused");
-                    tulemus.setLayoutX(325);
-                    tulemus.setLayoutY(450);
-                    juur.getChildren().add(tulemus);
 
                     tulemus.setOnMouseClicked(new EventHandler<MouseEvent>() {
                         //TULEMUSE NUPULE VAJUTAMINE AVAB TULEMUSTE TABELI
@@ -156,24 +156,23 @@ public class TripsTrapsTrullGUI extends Application {
                             tulemuseTabel.setPadding(new Insets(0, 10, 0, 10));
                             //----------------------------------------
                             //FAILI KIRJUTAMINE
-                            if(!tulemuseSõne.equals("")) {
+                            if (!tulemuseSõne.equals("")) {
                                 System.out.println("ja");
                                 List<String> andmed = new ArrayList<String>();
                                 File fail = new File("tulemused.txt");
-                                try(BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(fail), "UTF-8"))) {
-                                    if(fail.exists()) {
+                                try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(fail), "UTF-8"))) {
+                                    if (fail.exists()) {
                                         String rida;
                                         int i = 0;
                                         while ((rida = br.readLine()) != null) {
                                             String[] tükid = rida.split(";");
-                                            if(i == 0) {
+                                            if (i == 0) {
                                                 andmed.add(tükid[0]);
                                                 andmed.add(tükid[1]);
                                                 andmed.add(tükid[2]);
                                                 andmed.add(tükid[3]);
                                                 i++;
-                                            }
-                                            else {
+                                            } else {
                                                 String nimi = tükid[0];
                                                 int võidud = Integer.parseInt(tükid[1]);
                                                 int viigid = Integer.parseInt(tükid[2]);
@@ -198,22 +197,21 @@ public class TripsTrapsTrullGUI extends Application {
                                             }
                                         }
                                     }
-                                }
-                                catch (IOException e) {
+                                } catch (IOException e) {
                                     e.printStackTrace();
                                 }
                                 for (String anAndmed : andmed) {
                                     System.out.println(anAndmed);
                                 }
-                                try(BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File("tulemused.txt")), "UTF-8"))) {
+                                try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File("tulemused.txt")), "UTF-8"))) {
                                     int i = 0;
                                     while (i < andmed.size()) {
-                                        bw.write(andmed.get(i) + ";" + andmed.get(i+1) +
-                                                ";" + andmed.get(i+2) + ";" + andmed.get(i+3));
+                                        bw.write(andmed.get(i) + ";" + andmed.get(i + 1) +
+                                                ";" + andmed.get(i + 2) + ";" + andmed.get(i + 3));
                                         bw.write(System.getProperty("line.separator"));
                                         i += 4;
                                     }
-                                    if(!andmed.contains(inimese_nimi)) {
+                                    if (!andmed.contains(inimese_nimi)) {
                                         int võidud = 0;
                                         int viigid = 0;
                                         int kaotused = 0;
@@ -238,8 +236,8 @@ public class TripsTrapsTrullGUI extends Application {
 
                             //FAILIST LUGEMINE
                             File fail2 = new File("tulemused.txt");
-                            try(BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(fail2), "UTF-8"))) {
-                                if(!fail2.exists()) {
+                            try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(fail2), "UTF-8"))) {
+                                if (!fail2.exists()) {
                                     fail2.createNewFile();
                                 }
                                 String rida;
@@ -252,12 +250,12 @@ public class TripsTrapsTrullGUI extends Application {
                                     tulemuseTabel.add(new Text(tükid[3]), 3, i);
                                     i++;
                                 }
-                            }
-                            catch (IOException e) {
+                            } catch (IOException e) {
                                 e.printStackTrace();
                             }
 
                             //------------------------------------------
+
 
                             Scene tulemuseStseen = new Scene(tulemuseTabel, 400, 100);
                             tulemused.setScene(tulemuseStseen);
@@ -268,8 +266,6 @@ public class TripsTrapsTrullGUI extends Application {
 
                     Button uus_mäng = new Button();
                     uus_mäng.setText("Uus mäng");
-                    uus_mäng.setLayoutX(100);
-                    uus_mäng.setLayoutY(450);
                     //UUE MÄNGU NUPULE VAJUTAMINE LOOB UUE MÄNGUAKNA
                     uus_mäng.setOnMouseClicked(new EventHandler<MouseEvent>() {
                         @Override
@@ -297,7 +293,6 @@ public class TripsTrapsTrullGUI extends Application {
                             //juur.getChildren().add(iv2);
                         }
                     });
-                    juur.getChildren().add(uus_mäng);
 
                     //LOOME MÄNGUAKNA RUUDUSTIKU
                     //Ruudustik
@@ -317,14 +312,62 @@ public class TripsTrapsTrullGUI extends Application {
                             gp.add(kuhi, j, i);
                         }
                     }
-
+                    gp.add(uus_mäng,2,8);
+                    gp.add(tulemus,0,8);
                     gp.setLayoutX(100);
                     gp.setLayoutY(100);
                     juur.getChildren().add(gp);
+
                     //--------------------------------------------------------------
                     Scene mänguStseen = new Scene(juur, 500, 500);
                     mäng.setScene(mänguStseen);
                     mäng.show();
+
+                    //MÄNGUAKNA SUURUSE MUUTUMISE JÄLGIMINE
+                    mänguStseen.widthProperty().addListener(new ChangeListener<Number>() {
+                        @Override
+                        public void changed(ObservableValue<? extends Number> observableValue, Number vanaStseeniLaius, Number uusStseeniLaius) {
+                            double uuslaius = uusStseeniLaius.intValue();
+                            double vanalaius = vanaStseeniLaius.intValue();
+                            double laiuse_muutus = vanalaius/uuslaius;
+                            StackPane sp = new StackPane();
+                            Rectangle r = new Rectangle();
+                            for (Node N : gp.getChildren()){
+                                if (N.getClass()!= sp.getClass()){
+                                    continue;
+                                }
+                                     for (Node s : ((StackPane) N).getChildren()){
+                                         if (s.getClass()==r.getClass()){
+                                             double vana = ((Rectangle)s).getWidth();
+                                             ((Rectangle)s).setWidth(vana/laiuse_muutus);
+                                         }
+                                     }
+                            }
+                        }
+                    });
+
+                    mänguStseen.heightProperty().addListener(new ChangeListener<Number>() {
+                        @Override
+                        public void changed(ObservableValue<? extends Number> observable, Number vanaStseeniKõrgus, Number uusStseeniKõrgus) {
+                            double uuskõrgus = uusStseeniKõrgus.intValue();
+                            double vanakõrgus = vanaStseeniKõrgus.intValue();
+                            double kõrguse_muutus = vanakõrgus/uuskõrgus;
+                            StackPane sp = new StackPane();
+                            Rectangle r = new Rectangle();
+                            for (Node N : gp.getChildren()){
+                                if (N.getClass()!= sp.getClass()){
+                                    continue;
+                                }
+                                for (Node s : ((StackPane) N).getChildren()){
+                                    if (s.getClass()==r.getClass()){
+                                        double vana = ((Rectangle)s).getHeight();
+                                        ((Rectangle)s).setHeight(vana / kõrguse_muutus);
+                                    }
+                                }
+
+                            }
+                        }
+                    });
 
                     //RUUDULE VAJUTADES SAAME TEADA, KUHU RUUDULE VAJUTATI
                     gp.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
@@ -403,7 +446,7 @@ public class TripsTrapsTrullGUI extends Application {
 
     @Override
     public void start(Stage peaLava) throws Exception {
-
+        //peaLava.setMinWidth();
         Scene peaStseen = new Scene(tervitusAken(peaLava), 500, 175);
         peaLava.setTitle("Trips-Traps-Trull");
         peaLava.setScene(peaStseen);
