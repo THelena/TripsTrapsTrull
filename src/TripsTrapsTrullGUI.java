@@ -27,6 +27,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class TripsTrapsTrullGUI extends Application {
@@ -37,6 +38,18 @@ public class TripsTrapsTrullGUI extends Application {
     static boolean käikTehtud = false;
     static String tulemuseSõne = "võit";
     static String inimese_nimi;
+
+    public static boolean isNumeric(String sõne){
+        ArrayList<String> numbrid = new ArrayList<>();
+        numbrid.addAll(Arrays.asList("1","2","3","4","5","6","7","8","9"));
+        String[] tükid = sõne.split("");
+        for (String tükk: tükid){
+            if (!numbrid.contains(tükk)){
+                return false;
+            }
+        }
+        return true;
+    }
 
     Group tervitusAken(Stage peaLava) {
         //AVAAKNA TEKSTID, NUPUD JMS ASJAD
@@ -95,15 +108,51 @@ public class TripsTrapsTrullGUI extends Application {
         nimi.setAlignment(Pos.CENTER);
         juur.getChildren().add(nimi);
 
+
         //ENTERI VAJUTAMINE AVAB MÄNGUAKNA
-        nimi.setOnKeyPressed(new EventHandler<KeyEvent>() {
+        nimi.setOnKeyPressed(new EventHandler<KeyEvent>()  {
             @Override
-            public void handle(KeyEvent event){
+            public void handle(KeyEvent event) {
                 if (event.getCode().equals(KeyCode.ENTER)) {
                     //MÄNGUPLATSI TEGEMINE
-                    peaLava.close();
-                    inimese_nimi = nimi.getText();
+                    //inimese_nimi = nimi.getText();
+                    Text numbrierind = new Text("Sisestatud nimi koosneb ainult numbritest!");
+                    numbrierind.setFill(Color.RED);
+                    while (true){
+                        inimese_nimi = nimi.getText();
+                        System.out.println("*");
+                        nimi.setOnKeyPressed(new EventHandler<KeyEvent>() {
+                            @Override
+                            public void handle(KeyEvent event) {
+                                System.out.println(0);
+                                if (event.getCode().equals(KeyCode.ENTER)) {
+                                    System.out.println(1);
+                                    juur.getChildren().remove(numbrierind);
+                                    try {
+                                        System.out.println(2);
+                                        inimese_nimi = nimi.getText();
+                                        System.out.println(3);
+                                        if (isNumeric(inimese_nimi)) {
+                                            System.out.println(4);
+                                            throw new NimiNumbritenaErind();
+                                        }
+                                        if (event.getCode().equals(KeyCode.ENTER)) {
+                                            System.out.println("Jätka tööga");
+                                        }
+                                    } catch (NimiNumbritenaErind nne) {
+                                        System.out.println("Sisesta nimi uuesti: ");
+                                        inimese_nimi = nimi.getText();
+                                    }
+                                    System.out.println(5);
+                                }
+                                System.out.println(6);
+                            }
+                        });
 
+                        System.out.println(7);
+                            break;
+                    }
+                    peaLava.close();
                     final Stage mäng = new Stage();
                     mäng.setMinWidth(475);
                     mäng.setMinHeight(475);
