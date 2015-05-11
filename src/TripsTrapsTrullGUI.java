@@ -40,6 +40,7 @@ public class TripsTrapsTrullGUI extends Application {
     static String tulemuseSõne = "";
     static String inimese_nimi;
     static String kontroll_Sõne = "";
+    static boolean tulemuseleVajutati = false;
 
 
     public static boolean isNumeric(String sõne){
@@ -124,8 +125,8 @@ public class TripsTrapsTrullGUI extends Application {
                     inimese_nimi = nimi.getText();
                     peaLava.close();
                     final Stage mäng = new Stage();
-                    mäng.setMinWidth(475);
-                    mäng.setMinHeight(475);
+                    mäng.setMinWidth(410);
+                    mäng.setMinHeight(500);
                     mäng.initModality(Modality.APPLICATION_MODAL);
                     mäng.initOwner(peaLava);
 
@@ -138,13 +139,9 @@ public class TripsTrapsTrullGUI extends Application {
                     //-------------------------------------------------------------
                     //MÄNGUAKNA TEKSTID, NUPUD JMS
                     Group juur = new Group();
-                    Text tekst = new Text("Oma käigu tegemiseks vajuta soovitud ruutu. Edukat mängimist, " + inimese_nimi + "!");
+                    Text tekst = new Text("Oma käigu tegemiseks vajuta soovitud ruutu." + "\n" + "Edukat mängimist, " + inimese_nimi + "!");
                     tekst.setTextAlignment(TextAlignment.CENTER);
                     tekst.setFont(new Font(15));
-                    tekst.setLayoutX(100);
-                    tekst.setLayoutY(50);
-                    tekst.setWrappingWidth(300);
-                    juur.getChildren().add(tekst);
 
                     Button tulemus = new Button();
                     tulemus.setText("Tulemused");
@@ -175,114 +172,122 @@ public class TripsTrapsTrullGUI extends Application {
                             tulemuseTabel.setPadding(new Insets(0, 10, 0, 10));
                             //----------------------------------------
                             List<String> andmed = new ArrayList<String>();
-                            //FAILI KIRJUTAMINE
-                            if (!tulemuseSõne.equals("")) {
-                                System.out.println("ja");
-                                File fail = new File("tulemused.txt");
-                                try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(fail), "UTF-8"))) {
-                                    if (fail.exists()) {
-                                        String rida;
-                                        int i = 0;
-                                        while ((rida = br.readLine()) != null) {
-                                            String[] tükid = rida.split(";");
-                                            if (i == 0) {
+
+                            //FAILIST LUGEMINE, VAJALIKU LISTI TEGEMINE
+                            File fail_1 = new File("tulemused.txt");
+                            if (fail_1.exists()) {
+                                try(BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(fail_1), "UTF-8"))) {
+                                    String rida;
+                                    int i = 0;
+                                    while ((rida = br.readLine()) != null) {
+                                        String[] tükid = rida.split(";");
+                                        if (i == 0) {
+                                            andmed.add(tükid[0]);
+                                            andmed.add(tükid[1]);
+                                            andmed.add(tükid[2]);
+                                            andmed.add(tükid[3]);
+                                            i++;
+                                        }
+                                        else {
+                                            if (!tulemuseSõne.equals("") && !tulemuseleVajutati) {
+                                                if (inimese_nimi.equals(tükid[0])) {
+                                                    int võidud = Integer.parseInt(tükid[1]);
+                                                    int viigid = Integer.parseInt(tükid[2]);
+                                                    int kaotused = Integer.parseInt(tükid[3]);
+                                                    if (tulemuseSõne.equals("võit")) {
+                                                        võidud++;
+                                                    } else if (tulemuseSõne.equals("viik")) {
+                                                        viigid++;
+                                                    }
+                                                    else {
+                                                        kaotused++;
+                                                    }
+                                                    andmed.add(tükid[0]);
+                                                    andmed.add(String.valueOf(võidud));
+                                                    andmed.add(String.valueOf(viigid));
+                                                    andmed.add(String.valueOf(kaotused));
+
+                                                } else {
+                                                    andmed.add(tükid[0]);
+                                                    andmed.add(tükid[1]);
+                                                    andmed.add(tükid[2]);
+                                                    andmed.add(tükid[3]);
+                                                }
+                                            }
+                                            else {
                                                 andmed.add(tükid[0]);
                                                 andmed.add(tükid[1]);
                                                 andmed.add(tükid[2]);
                                                 andmed.add(tükid[3]);
-                                                i++;
-                                            } else {
-                                                String nimi = tükid[0];
-                                                int võidud = Integer.parseInt(tükid[1]);
-                                                int viigid = Integer.parseInt(tükid[2]);
-                                                int kaotused = Integer.parseInt(tükid[3]);
-                                                if (inimese_nimi.equals(nimi)) {
-                                                    switch (tulemuseSõne) {
-                                                        case "võit":
-                                                            võidud++;
-                                                            break;
-                                                        case "kaotus":
-                                                            kaotused++;
-                                                            break;
-                                                        default:
-                                                            viigid++;
-                                                            break;
-                                                    }
-                                                }
-                                                andmed.add(nimi);
-                                                andmed.add(String.valueOf(võidud));
-                                                andmed.add(String.valueOf(viigid));
-                                                andmed.add(String.valueOf(kaotused));
                                             }
                                         }
-                                    }
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                                if (andmed.size() == 0) {
-                                    andmed.add("Nimi");
-                                    andmed.add("Võidud");
-                                    andmed.add("Viigid");
-                                    andmed.add("Kaotused");
-                                }
-                                File fail1 = new File("tulemused.txt");
-                                try {
-                                    if (!fail1.exists()) {
-                                        fail1.createNewFile();
                                     }
                                 }
                                 catch (IOException e) {
                                     e.printStackTrace();
                                 }
-                                try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fail1), "UTF-8"))) {
-                                    int i = 0;
-                                    while (i < andmed.size()) {
-                                        bw.write(andmed.get(i) + ";" + andmed.get(i + 1) +
-                                                ";" + andmed.get(i + 2) + ";" + andmed.get(i + 3));
-                                        bw.write(System.getProperty("line.separator"));
-                                        i += 4;
-                                    }
-                                    if (!andmed.contains(inimese_nimi) && !tulemuseSõne.equals("")) {
-                                        int võidud = 0;
-                                        int viigid = 0;
-                                        int kaotused = 0;
-                                        switch (tulemuseSõne) {
-                                            case "võit":
-                                                võidud++;
-                                                break;
-                                            case "kaotus":
-                                                kaotused++;
-                                                break;
-                                            default:
-                                                viigid++;
-                                                break;
-                                        }
-                                        bw.write(inimese_nimi + ";" + võidud + ";" + viigid + ";" + kaotused);
-                                        bw.write(System.getProperty("line.separator"));
-                                    }
-                                } catch (IOException e) {
+                            }
+                            else {
+                                try {
+                                    fail_1.createNewFile();
+                                }
+                                catch (IOException e) {
                                     e.printStackTrace();
                                 }
+                                andmed.add("Nimi");
+                                andmed.add("Võidud");
+                                andmed.add("Viigid");
+                                andmed.add("Kaotused");
+                            }
+                            if (!tulemuseSõne.equals("") && !andmed.contains(inimese_nimi) && !tulemuseleVajutati) {
+                                andmed.add(inimese_nimi);
+                                if (tulemuseSõne.equals("võit")) {
+                                    andmed.add(String.valueOf(1));
+                                    andmed.add(String.valueOf(0));
+                                    andmed.add(String.valueOf(0));
+                                }
+                                else if (tulemuseSõne.equals("viik")) {
+                                    andmed.add(String.valueOf(0));
+                                    andmed.add(String.valueOf(1));
+                                    andmed.add(String.valueOf(0));
+                                }
+                                else {
+                                    andmed.add(String.valueOf(0));
+                                    andmed.add(String.valueOf(0));
+                                    andmed.add(String.valueOf(1));
+                                }
                             }
 
-                            //FAILIST LUGEMINE
-                            File fail2 = new File("tulemused.txt");
-                            try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(fail2), "UTF-8"))) {
-                                String rida;
-                                int i = 0;
-                                while ((rida = br.readLine()) != null) {
-                                    String[] tükid = rida.split(";");
-                                    tulemuseTabel.add(new Text(tükid[0]), 0, i);
-                                    tulemuseTabel.add(new Text(tükid[1]), 1, i);
-                                    tulemuseTabel.add(new Text(tükid[2]), 2, i);
-                                    tulemuseTabel.add(new Text(tükid[3]), 3, i);
-                                    i++;
+                            //TULEMUSTE TABELI KUVAMINE
+                            int indeks = 0;
+                            int rida = 0;
+                            while (indeks < andmed.size()) {
+                                tulemuseTabel.add(new Text(andmed.get(indeks)), 0, rida);
+                                tulemuseTabel.add(new Text(andmed.get(indeks + 1)), 1, rida);
+                                tulemuseTabel.add(new Text(andmed.get(indeks + 2)), 2, rida);
+                                tulemuseTabel.add(new Text(andmed.get(indeks + 3)), 3, rida);
+                                indeks += 4;
+                                rida++;
+                            }
+
+                            // FAILI UUTE ANDMETE KIRJUTAMINE
+                            File fail_2 = new File("tulemused.txt");
+                            try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fail_2), "UTF-8"))) {
+                                int indeks2 = 0;
+                                while (indeks2 < andmed.size()) {
+                                    bw.write(andmed.get(indeks2) + ";" + andmed.get(indeks2 + 1) +
+                                            ";" + andmed.get(indeks2 + 2) + ";" + andmed.get(indeks2 + 3));
+                                    bw.write(System.getProperty("line.separator"));
+                                    indeks2 += 4;
                                 }
-                            } catch (IOException e) {
+                            }
+                            catch (IOException e) {
                                 e.printStackTrace();
                             }
-
                             //------------------------------------------
+                            if (!tulemuseSõne.equals("")) {
+                                tulemuseleVajutati = true;
+                            }
                             sc.setContent(tulemuseTabel);
                             Scene tulemuseStseen = new Scene(sc, 300, 300);
                             tulemused.setScene(tulemuseStseen);
@@ -302,10 +307,10 @@ public class TripsTrapsTrullGUI extends Application {
                                 ruudu_tekstid.get(i).setText("");
                                 käigud.set(i, "");
                             }
+                            tulemuseleVajutati = false;
                             tulemuseSõne = "";
                             tervitusAken(peaLava);
-                            //mäng.close();
-                            //peaLava.show();
+
 
 
                             Image võit = new Image("file:sun.png");
@@ -330,7 +335,7 @@ public class TripsTrapsTrullGUI extends Application {
                     //LOOME MÄNGUAKNA RUUDUSTIKU
                     //Ruudustik
                     GridPane gp = new GridPane();
-                    for (int i = 0; i < 3; i++) {
+                    for (int i = 1; i < 4; i++) {
                         for (int j = 0; j < 3; j++) {
                             StackPane kuhi = new StackPane();
                             Text ruudu_tekst = new Text("");
@@ -345,14 +350,19 @@ public class TripsTrapsTrullGUI extends Application {
                             gp.add(kuhi, j, i);
                         }
                     }
+
+                    Text seis = new Text();
+                    seis.setText("Mäng on pooleli.");
+                    gp.add(tekst, 0, 0, 3, 1);
+                    gp.add(seis, 1, 9);
                     gp.add(uus_mäng,2,8);
                     gp.add(tulemus,0,8);
-                    gp.setLayoutX(100);
-                    gp.setLayoutY(100);
+                    gp.setLayoutX(50);
+                    gp.setLayoutY(50);
                     juur.getChildren().add(gp);
 
                     //--------------------------------------------------------------
-                    Scene mänguStseen = new Scene(juur, 500, 500);
+                    Scene mänguStseen = new Scene(juur, 400, 500);
                     mäng.setScene(mänguStseen);
                     mäng.show();
 
@@ -416,20 +426,24 @@ public class TripsTrapsTrullGUI extends Application {
                                     if (node.getBoundsInParent().contains(event.getSceneX() - 100, event.getSceneY() - 100)) {
                                         int rida = gp.getRowIndex(node);
                                         int veerg = gp.getColumnIndex(node);
-                                        if (rida == 0) {
+                                        if (rida == 1) {
                                             käik = veerg;
-                                        } else if (rida == 1) {
+                                        } else if (rida == 2) {
                                             käik = veerg + 3;
-                                        } else {
+                                        } else if (rida == 3) {
                                             käik = veerg + 6;
                                         }
+                                        System.out.println(käik);
                                     }
                                 }
                             }
                             try {
-                                if (käigud.get(käik).equals("X") || käigud.get(käik).equals("O") && tulemuseSõne.equals("")) {
+                                if ((käigud.get(käik).equals("X") || käigud.get(käik).equals("O")) && tulemuseSõne.equals("")) {
                                     throw new ValeKastiErind("Sinna kasti ei saa käia.");
                                 }
+                                //else if(!tulemuseSõne.equals("")) {
+                                //    throw new MängLäbiErind("Mäng on läbi. Ei ole mõtet enam proovida käia.");
+                                //}
                                 if (!(käigud.get(käik).equals("X") || käigud.get(käik).equals("O")) && tulemuseSõne.equals("")) {
                                     käigud.set(käik, "X");
                                     laud.setKäigud(käigud);
@@ -437,10 +451,14 @@ public class TripsTrapsTrullGUI extends Application {
                                     if (laud.kontroll("X")) {
                                         System.out.println("võit");
                                         tulemuseSõne = "võit";
-                                    } else if (!käigud.contains("")) {
+                                        seis.setText("VÕIT!");
+                                    }
+                                    else if (!käigud.contains("")) {
                                         System.out.println("viik");
                                         tulemuseSõne = "viik";
-                                    } else if (tulemuseSõne.equals("")) {
+                                        seis.setText("VIIK!");
+                                    }
+                                    else if (tulemuseSõne.equals("")) {
                                         try {
                                             int arvuti_number = laud.teeKaik();
                                             käigud.set(arvuti_number, "O");
@@ -450,6 +468,13 @@ public class TripsTrapsTrullGUI extends Application {
                                             if (laud.kontroll("O")) {
                                                 System.out.println("kaotus");
                                                 tulemuseSõne = "kaotus";
+                                                seis.setText("KAOTUS!");
+
+                                            }
+                                            else if (!käigud.contains("")) {
+                                                System.out.println("viik");
+                                                tulemuseSõne = "viik";
+                                                seis.setText("VIIK!");
                                             }
                                         } catch (InterruptedException e) {
                                             e.printStackTrace();
@@ -461,6 +486,9 @@ public class TripsTrapsTrullGUI extends Application {
                             catch (ValeKastiErind e) {
                                 System.out.println(e.getMessage());
                             }
+                            //catch (MängLäbiErind e) {
+                            //    System.out.println(e.getMessage());
+                            //}
                         }
                     });
                     //MÄNGUPLATSI TEGEMINE LÕPPEB
