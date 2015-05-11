@@ -25,8 +25,6 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-
-import javax.swing.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -119,35 +117,24 @@ public class TripsTrapsTrullGUI extends Application {
         nimi.setOnKeyPressed(new EventHandler<KeyEvent>()  {
             @Override
             public void handle(KeyEvent event) {
+                inimese_nimi = nimi.getText();
+
                 if (event.getCode().equals(KeyCode.ENTER)) {
-                    System.out.println(0);
-                    if (nime_kontroll==false){
-                        System.out.println(1);
-                        while(true){
-                            try{
-                                System.out.println(1);
-                                inimese_nimi = nimi.getText();
-                                System.out.println(2);
-                                if(inimese_nimi.equals("")){
-                                    throw new TühjaSõneErind("Nimi ei tohi olla tühisõne!");
-                                }
-                                else{
-                                    System.out.println(3);
-                                    nime_kontroll = true;
-                                    break;
-                                }
-                            }
-                            catch(TühjaSõneErind e){
-                                System.out.println(4);
 
-                                //nime_kontroll = false;
-
-                            }
+                    try {
+                        if (inimese_nimi.equals("")) {
+                            throw new TühjaSõneErind("Nimi ei tohi olla tühi.");
                         }
                     }
-                    System.out.println(5);
+                    catch (TühjaSõneErind e) {
+                        System.out.println(e.getMessage());
+                        peaLava.close();
+                        //tervitusAken(peaLava);
+                        peaLava.show();
+                    }
+
                     //MÄNGUPLATSI TEGEMINE
-                    inimese_nimi = nimi.getText();
+
                     peaLava.close();
                     final Stage mäng = new Stage();
                     mäng.setMinWidth(475);
@@ -203,7 +190,7 @@ public class TripsTrapsTrullGUI extends Application {
                             List<String> andmed = new ArrayList<String>();
 
                             //FAILIST LUGEMINE, VAJALIKU LISTI TEGEMINE
-                            File fail_1 = new File("C:\\Users\\MariLiis\\IdeaProjects\\TripsTrapsTrull\\src\\tulemused.txt");
+                            File fail_1 = new File("tulemused.txt");
                             if (fail_1.exists()) {
                                 try(BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(fail_1), "UTF-8"))) {
                                     String rida;
@@ -300,7 +287,7 @@ public class TripsTrapsTrullGUI extends Application {
                             }
 
                             // FAILI UUTE ANDMETE KIRJUTAMINE
-                            File fail_2 = new File("C:\\Users\\MariLiis\\IdeaProjects\\TripsTrapsTrull\\src\\tulemused.txt");
+                            File fail_2 = new File("tulemused.txt");
                             try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fail_2), "UTF-8"))) {
                                 int indeks2 = 0;
                                 while (indeks2 < andmed.size()) {
@@ -339,23 +326,6 @@ public class TripsTrapsTrullGUI extends Application {
                             tulemuseleVajutati = false;
                             tulemuseSõne = "";
                             tervitusAken(peaLava);
-
-                            Image võit = new Image("file:sun.png");
-                            //Image viik = new Image("file:pokerface.jpg");
-                            //Image kaotus = new Image("file:sad.jpg");
-
-                            //ImageView iv1 = new ImageView();
-                            //iv1.setImage(võit);
-                            ImageView iv2 = new ImageView();
-                            iv2.setImage(võit);
-                            iv2.setFitHeight(100);
-                            iv2.setFitWidth(100);
-                            iv2.setPreserveRatio(true);
-                            iv2.setSmooth(true);
-                            iv2.setCache(true);
-                            iv2.setLayoutX(400);
-                            iv2.setLayoutY(400);
-                            //juur.getChildren().add(iv2);
                         }
                     });
                     //LOOME MÄNGUAKNA RUUDUSTIKU
@@ -382,6 +352,14 @@ public class TripsTrapsTrullGUI extends Application {
                     gp.setLayoutY(100);
                     juur.getChildren().add(gp);
 
+                    Text seis = new Text();
+                    seis.setText("Mäng on veel pooleli.");
+                    seis.setLayoutX(150);
+                    seis.setLayoutY(470);
+                    seis.setTextAlignment(TextAlignment.CENTER);
+                    seis.setWrappingWidth(200);
+                    juur.getChildren().add(seis);
+
                     //--------------------------------------------------------------
                     Scene mänguStseen = new Scene(juur, 500, 500);
                     mäng.setScene(mänguStseen);
@@ -394,6 +372,8 @@ public class TripsTrapsTrullGUI extends Application {
                             double uuslaius = uusStseeniLaius.intValue();
                             double vanalaius = vanaStseeniLaius.intValue();
                             double laiuse_muutus = vanalaius/uuslaius;
+                            tekst.setWrappingWidth(uuslaius - 250);
+                            seis.setWrappingWidth(uuslaius - 350);
                             StackPane sp = new StackPane();
                             Rectangle r = new Rectangle();
                             for (Node N : gp.getChildren()){
@@ -416,6 +396,7 @@ public class TripsTrapsTrullGUI extends Application {
                             double uuskõrgus = uusStseeniKõrgus.intValue();
                             double vanakõrgus = vanaStseeniKõrgus.intValue();
                             double kõrguse_muutus = vanakõrgus/uuskõrgus;
+                            seis.setLayoutY(uuskõrgus - 30);
                             StackPane sp = new StackPane();
                             Rectangle r = new Rectangle();
                             for (Node N : gp.getChildren()){
@@ -462,15 +443,18 @@ public class TripsTrapsTrullGUI extends Application {
                                     throw new ValeKastiErind("Sinna kasti ei saa käia.");
                                 }
                                 if (!(käigud.get(käik).equals("X") || käigud.get(käik).equals("O")) && tulemuseSõne.equals("")) {
+                                    seis.setText("Mäng on veel pooleli.");
                                     käigud.set(käik, "X");
                                     laud.setKäigud(käigud);
                                     ruudu_tekstid.get(käik).setText("X");
                                     if (laud.kontroll("X")) {
                                         System.out.println("võit");
                                         tulemuseSõne = "võit";
+                                        seis.setText("Tubli! Sa võitsid!");
                                     } else if (!käigud.contains("")) {
                                         System.out.println("viik");
                                         tulemuseSõne = "viik";
+                                        seis.setText("Harjuta veel. Jäite arvutiga viiki.");
                                     } else if (tulemuseSõne.equals("")) {
                                         try {
                                             int arvuti_number = laud.teeKaik();
@@ -481,6 +465,11 @@ public class TripsTrapsTrullGUI extends Application {
                                             if (laud.kontroll("O")) {
                                                 System.out.println("kaotus");
                                                 tulemuseSõne = "kaotus";
+                                                seis.setText("Sa kaotasid! Muuda oma strateegiat.");
+                                            }
+                                            else if (!käigud.contains("")) {
+                                                tulemuseSõne = "viik";
+                                                seis.setText("Harjuta veel. Jäite arvutiga viiki.");
                                             }
                                         } catch (InterruptedException e) {
                                             e.printStackTrace();
@@ -490,7 +479,7 @@ public class TripsTrapsTrullGUI extends Application {
                                 }
                             }
                             catch (ValeKastiErind e) {
-                                System.out.println(e.getMessage());
+                                seis.setText(e.getMessage());
                             }
                         }
                     });
