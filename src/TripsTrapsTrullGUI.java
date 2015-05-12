@@ -20,9 +20,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
+import javafx.scene.text.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import java.io.*;
@@ -68,10 +66,13 @@ public class TripsTrapsTrullGUI extends Application {
         tervitus.setWrappingWidth(400);
         tervitus.setLayoutX(50);
         tervitus.setLayoutY(50);
+        tervitus.setFont(Font.font(null, FontWeight.BOLD, 20));
+        tervitus.setFill(Color.TOMATO);
         juur.getChildren().add(tervitus);
 
         Text juhis = new Text();
         juhis.setText("Alustamiseks vali, kes teeb esimese käigu, sisesta oma nimi ja vajuta ENTER.");
+        juhis.setFont(Font.font(null, FontPosture.ITALIC, 13));
         juhis.setTextAlignment(TextAlignment.CENTER);
         juhis.setWrappingWidth(300);
         juhis.setLayoutX(100);
@@ -79,10 +80,10 @@ public class TripsTrapsTrullGUI extends Application {
         juur.getChildren().add(juhis);
 
         ToggleGroup raadionupud = new ToggleGroup();
-        RadioButton arvuti = new RadioButton("Arvuti");
+        RadioButton arvuti = new RadioButton("ARVUTI");
         arvuti.setToggleGroup(raadionupud);
         arvuti.setSelected(true);
-        RadioButton inimene = new RadioButton("Sina");
+        RadioButton inimene = new RadioButton("SINA");
         inimene.setToggleGroup(raadionupud);
         arvuti.setLayoutX(250);
         arvuti.setLayoutY(105);
@@ -148,16 +149,39 @@ public class TripsTrapsTrullGUI extends Application {
                     }
                     Mängulaud laud = new Mängulaud(käigud);
 
-                    //-------------------------------------------------------------
+                    //--------------------------------------------------------------
                     //MÄNGUAKNA TEKSTID, NUPUD JMS
                     Group juur = new Group();
                     Text tekst = new Text("Oma käigu tegemiseks vajuta soovitud ruutu. Edukat mängimist, " + inimese_nimi + "!");
                     tekst.setTextAlignment(TextAlignment.CENTER);
-                    tekst.setFont(new Font(15));
+                    //tekst.setFont(new Font(20));
                     tekst.setLayoutX(100);
                     tekst.setLayoutY(50);
                     tekst.setWrappingWidth(300);
+                    tekst.setFont(Font.font(null, FontWeight.BOLD, 15));
                     juur.getChildren().add(tekst);
+
+                    Image tühiPilt = new Image("file:tühiPilt.png");
+                    ImageView pildiVaade = new ImageView();
+                    pildiVaade.setImage(tühiPilt);
+                    pildiVaade.setFitHeight(100);
+                    pildiVaade.setFitWidth(100);
+                    pildiVaade.setPreserveRatio(true);
+                    pildiVaade.setSmooth(true);
+                    pildiVaade.setCache(true);
+                    pildiVaade.setLayoutX(400);
+                    pildiVaade.setLayoutY(400);
+                    juur.getChildren().add(pildiVaade);
+
+
+                    Text seis = new Text();
+                    seis.setText("Mäng on veel pooleli.");
+                    seis.setLayoutX(150);
+                    seis.setLayoutY(470);
+                    seis.setTextAlignment(TextAlignment.CENTER);
+                    seis.setFont(new Font(15));
+                    seis.setWrappingWidth(200);
+                    juur.getChildren().add(seis);
 
                     Button tulemus = new Button();
                     tulemus.setText("Tulemused");
@@ -326,6 +350,8 @@ public class TripsTrapsTrullGUI extends Application {
                             tulemuseleVajutati = false;
                             tulemuseSõne = "";
                             tervitusAken(peaLava);
+                            seis.setText("Mäng on veel pooleli.");
+                            pildiVaade.setImage(tühiPilt);
                         }
                     });
                     //LOOME MÄNGUAKNA RUUDUSTIKU
@@ -351,14 +377,6 @@ public class TripsTrapsTrullGUI extends Application {
                     gp.setLayoutX(100);
                     gp.setLayoutY(100);
                     juur.getChildren().add(gp);
-
-                    Text seis = new Text();
-                    seis.setText("Mäng on veel pooleli.");
-                    seis.setLayoutX(150);
-                    seis.setLayoutY(470);
-                    seis.setTextAlignment(TextAlignment.CENTER);
-                    seis.setWrappingWidth(200);
-                    juur.getChildren().add(seis);
 
                     //--------------------------------------------------------------
                     Scene mänguStseen = new Scene(juur, 500, 500);
@@ -439,7 +457,7 @@ public class TripsTrapsTrullGUI extends Application {
                                 }
                             }
                             try {
-                                if (käigud.get(käik).equals("X") || käigud.get(käik).equals("O") && tulemuseSõne.equals("")) {
+                                if ((käigud.get(käik).equals("X") || käigud.get(käik).equals("O")) && tulemuseSõne.equals("") && käik > -1 && käik < 9) {
                                     throw new ValeKastiErind("Sinna kasti ei saa käia.");
                                 }
                                 if (!(käigud.get(käik).equals("X") || käigud.get(käik).equals("O")) && tulemuseSõne.equals("")) {
@@ -451,10 +469,14 @@ public class TripsTrapsTrullGUI extends Application {
                                         System.out.println("võit");
                                         tulemuseSõne = "võit";
                                         seis.setText("Tubli! Sa võitsid!");
+                                        Image võit = new Image("file:sun.png");
+                                        pildiVaade.setImage(võit);
                                     } else if (!käigud.contains("")) {
                                         System.out.println("viik");
                                         tulemuseSõne = "viik";
                                         seis.setText("Harjuta veel. Jäite arvutiga viiki.");
+                                        Image viik = new Image("file:pokerface.jpg");
+                                        pildiVaade.setImage(viik);
                                     } else if (tulemuseSõne.equals("")) {
                                         try {
                                             int arvuti_number = laud.teeKaik();
@@ -466,10 +488,14 @@ public class TripsTrapsTrullGUI extends Application {
                                                 System.out.println("kaotus");
                                                 tulemuseSõne = "kaotus";
                                                 seis.setText("Sa kaotasid! Muuda oma strateegiat.");
+                                                Image kaotus = new Image("file:sad.jpg");
+                                                pildiVaade.setImage(kaotus);
                                             }
                                             else if (!käigud.contains("")) {
                                                 tulemuseSõne = "viik";
                                                 seis.setText("Harjuta veel. Jäite arvutiga viiki.");
+                                                Image viik = new Image("file:pokerface.jpg");
+                                                pildiVaade.setImage(viik);
                                             }
                                         } catch (InterruptedException e) {
                                             e.printStackTrace();
