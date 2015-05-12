@@ -213,7 +213,7 @@ public class TripsTrapsTrullGUI extends Application {
                                     nime_kontroll = true;
                                     peaLava.close();
                                     final Stage mäng = new Stage();
-                                    mäng.setMinWidth(475);
+                                    mäng.setMinWidth(500);
                                     mäng.setMinHeight(475);
                                     mäng.initModality(Modality.APPLICATION_MODAL);
                                     mäng.initOwner(peaLava);
@@ -250,11 +250,11 @@ public class TripsTrapsTrullGUI extends Application {
 
                                     Text seis = new Text();
                                     seis.setText("Mäng on veel pooleli.");
-                                    seis.setLayoutX(150);
+                                    seis.setLayoutX(100);
                                     seis.setLayoutY(465);
                                     seis.setTextAlignment(TextAlignment.CENTER);
                                     seis.setFont(new Font(15));
-                                    seis.setWrappingWidth(200);
+                                    seis.setWrappingWidth(300);
                                     juur.getChildren().add(seis);
 
                                     Button tulemus = new Button();
@@ -353,14 +353,23 @@ public class TripsTrapsTrullGUI extends Application {
                                             gp.add(kuhi, j, i);
                                         }
                                     }
-                                    gp.add(uus_mäng, 2, 8);
-                                    gp.add(tulemus, 0, 8);
+                                    //gp.add(uus_mäng, 2, 8);
+                                    //gp.add(tulemus, 0, 8);
                                     gp.setLayoutX(100);
                                     gp.setLayoutY(100);
                                     juur.getChildren().add(gp);
 
+
+
+                                    tulemus.setLayoutX(115);
+                                    uus_mäng.setLayoutX(315);
+                                    uus_mäng.setLayoutY(410);
+                                    tulemus.setLayoutY(410);
+                                    juur.getChildren().add(uus_mäng);
+                                    juur.getChildren().add(tulemus);
+
                                     //--------------------------------------------------------------
-                                    Scene mänguStseen = new Scene(juur, 500, 500);
+                                    Scene mänguStseen = new Scene(juur, 520, 500);
                                     mäng.setScene(mänguStseen);
                                     mäng.show();
 
@@ -371,9 +380,6 @@ public class TripsTrapsTrullGUI extends Application {
                                             double uuslaius = uusStseeniLaius.intValue();
                                             double vanalaius = vanaStseeniLaius.intValue();
                                             double laiuse_muutus = vanalaius / uuslaius;
-                                            tekst.setWrappingWidth(uuslaius - 250);
-                                            seis.setWrappingWidth(uuslaius - 350);
-                                            pildiVaade.setLayoutX(uuslaius - 100);
                                             StackPane sp = new StackPane();
                                             Rectangle r = new Rectangle();
                                             for (Node N : gp.getChildren()) {
@@ -387,6 +393,11 @@ public class TripsTrapsTrullGUI extends Application {
                                                     }
                                                 }
                                             }
+                                            tulemus.setLayoutX(100 + ((gp.getWidth() / 3) - tulemus.getWidth()) / 2);
+                                            uus_mäng.setLayoutX(100 + 2 * (gp.getWidth() / 3) + ((gp.getWidth() / 3) - uus_mäng.getWidth()) / 2);
+                                            tekst.setWrappingWidth(gp.getWidth());
+                                            seis.setWrappingWidth(gp.getWidth());
+                                            pildiVaade.setLayoutX(100 + gp.getWidth());
                                         }
                                     });
 
@@ -412,6 +423,7 @@ public class TripsTrapsTrullGUI extends Application {
                                                 }
 
                                             }
+                                            System.out.println(gp.getHeight());
                                         }
                                     });
                                     if (alustaja.equals("arvuti")) {
